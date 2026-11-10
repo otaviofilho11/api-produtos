@@ -4,6 +4,7 @@ const db = require('./config/database');
 const app = express();
 app.use(express.json());
 
+//retornar todos produtos
 app.get('/allProducts', async(req,res) => {
 try{
     const [produtos] = await db.query(
@@ -20,6 +21,7 @@ try{
     }
 });
 
+//query por id
 app.get('/selectProduct/:id', async(req,res) => {
 const {id} = req.params;
 
@@ -29,7 +31,7 @@ if(!id || isNaN(Number(id))){
 
 try{
     const [produtos] = await db.query(
-        `SELECT * FROM produtos WHERE ID = ?`,[id]
+        'SELECT * FROM produtos WHERE ID = ?',[id]
     );
 
     if(produtos.length === 0){
@@ -48,7 +50,30 @@ try{
     }
 });
 
+//insert
 
+app.post('/insertProduct', async(req,res) =>{
+const {nome,quantidade,preco} = req.body;
+
+try{
+    const [produtos] = await db.query(
+        `
+            INSERT INTO produtos (nome,quantidade,preco) 
+            VALUES (?,?,?) 
+        `,[nome,quantidade,preco]
+    );
+
+        return res.status(200).json({
+            message:"Produto Inserido Com Sucesso!"
+        }); 
+
+}catch(erro){
+        return res.status(500).json({
+            erro:'Erro ao Inserir O Produto',
+            message:erro
+        });
+    }
+});
 
 const PORT = 3000;
 
