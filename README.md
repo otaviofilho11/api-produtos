@@ -1,46 +1,56 @@
-# API de Gerenciamento de Produtos
+# API REST de Gerenciamento de Produtos
 
-API REST desenvolvida com **Node.js**, **Express** e **MySQL** para praticar desenvolvimento Back-End. Atualmente, a aplicação permite consultar todos os produtos cadastrados e buscar um produto pelo seu ID.
+API REST desenvolvida com **Node.js**, **Express** e **MySQL** para gerenciar produtos por meio de requisições HTTP. O projeto foi desenvolvido com foco no aprendizado de desenvolvimento Back-end, integração com banco de dados relacional e operações assíncronas.
 
-## Tecnologias
+## Funcionalidades
 
-- [Node.js](https://nodejs.org/) — ambiente de execução JavaScript.
-- [Express 5](https://expressjs.com/) — criação das rotas HTTP.
-- [MySQL](https://www.mysql.com/) — banco de dados relacional.
-- [mysql2](https://sidorares.github.io/node-mysql2/) — comunicação entre Node.js e MySQL.
-- [dotenv](https://github.com/motdotla/dotenv) — leitura de variáveis de ambiente.
+- Listar todos os produtos cadastrados.
+- Buscar um produto pelo ID.
+- Cadastrar novos produtos.
+- Atualizar o preço de um produto.
+- Excluir produtos pelo ID.
+- Consultar a soma dos preços cadastrados.
+- Consultar a média dos preços cadastrados.
+
+## Tecnologias utilizadas
+
+- **Node.js** — ambiente de execução JavaScript.
+- **Express** — criação e gerenciamento das rotas HTTP.
+- **MySQL** — banco de dados relacional.
+- **mysql2** — conexão e execução de consultas SQL com suporte a Promises.
+- **dotenv** — gerenciamento de variáveis de ambiente.
 
 ## Pré-requisitos
 
-Antes de executar o projeto, instale:
+Antes de executar a aplicação, tenha instalado:
 
-- Node.js (versão 18 ou superior).
-- npm (instalado junto com o Node.js).
-- MySQL Server em execução.
+- Node.js 18 ou superior.
+- npm.
+- MySQL Server.
 
-## Instalação
+## Como executar o projeto
 
-1. Clone o repositório:
+### 1. Clone o repositório
 
-   ```bash
-   git clone URL_DO_REPOSITORIO
-   ```
+```bash
+git clone URL_DO_REPOSITORIO
+```
 
-2. Entre na pasta do projeto:
+### 2. Acesse a pasta do projeto
 
-   ```bash
-   cd projeto_api
-   ```
+```bash
+cd projeto_api
+```
 
-3. Instale as dependências:
+### 3. Instale as dependências
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-## Configuração do banco de dados
+### 4. Configure o banco de dados
 
-Abra o MySQL Workbench ou outro cliente MySQL e execute:
+No MySQL, crie o banco e a tabela utilizados pela aplicação:
 
 ```sql
 CREATE DATABASE produtos_api;
@@ -51,15 +61,15 @@ CREATE TABLE produtos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     quantidade INT NOT NULL,
-    valor DECIMAL(10,2) NOT NULL
+    preco DECIMAL(10, 2) NOT NULL
 );
 ```
 
-A aplicação espera encontrar uma tabela chamada `produtos`, com as colunas `id`, `nome`, `quantidade` e `valor`.
+> A estrutura da tabela deve utilizar os campos `id`, `nome`, `quantidade` e `preco`, conforme as consultas implementadas na API.
 
-### Variáveis de ambiente
+### 5. Configure as variáveis de ambiente
 
-Na raiz do projeto, crie um arquivo chamado `.env`:
+Crie um arquivo `.env` na raiz do projeto:
 
 ```env
 DB_HOST=localhost
@@ -69,16 +79,11 @@ DB_NAME=produtos_api
 DB_PORT=3306
 ```
 
-Substitua `seu_usuario` e `sua_senha` pelas credenciais do seu MySQL.
+Substitua os valores de usuário e senha pelas credenciais do seu MySQL.
 
-**Importante:** não envie o arquivo `.env` para o GitHub. Ele contém credenciais privadas. O `.gitignore` do projeto já deve conter:
+**Importante:** não compartilhe nem envie o arquivo `.env` ao GitHub. Ele contém credenciais de acesso ao banco de dados. Mantenha-o no `.gitignore`.
 
-```gitignore
-node_modules/
-.env
-```
-
-## Executando a API
+### 6. Inicie o servidor
 
 Na raiz do projeto, execute:
 
@@ -86,34 +91,91 @@ Na raiz do projeto, execute:
 node src/main.js
 ```
 
-O servidor ficará disponível em:
+Por padrão, o servidor será iniciado na porta `3000`:
 
 ```text
 http://localhost:3000
 ```
 
-## Rotas disponíveis
+## Endpoints
 
-| Método | Rota | Descrição |
+Abaixo estão as rotas implementadas no projeto.
+
+| Método | Endpoint | Descrição |
 |---|---|---|
-| GET | `/allProducts` | Retorna todos os produtos cadastrados. |
-| GET | `/selectProduct/:id` | Busca o produto correspondente ao ID informado. |
+| GET | `/` | Retorna todos os produtos. |
+| GET | `/selectProduct/:id` | Busca um produto pelo ID. |
+| POST | `/insertProduct` | Cadastra um novo produto. |
+| PUT | `/updateProductPrice/:id` | Atualiza o preço de um produto. |
+| DELETE | `/deleteProduct/:id` | Exclui um produto pelo ID. |
+| GET | `/totalPrice/` | Retorna a soma dos preços dos produtos. |
+| GET | `/avgPrice` | Retorna a média dos preços dos produtos. |
 
-### Exemplos de requisição
+### Exemplos de requisições
 
-**Listar todos os produtos**
+Os exemplos podem ser testados no Postman, Insomnia ou em outra ferramenta de requisições HTTP.
+
+#### Listar todos os produtos
 
 ```http
-GET http://localhost:3000/allProducts
+GET http://localhost:3000/
 ```
 
-**Buscar um produto pelo ID**
+#### Buscar produto pelo ID
 
 ```http
 GET http://localhost:3000/selectProduct/1
 ```
 
-As rotas podem ser testadas com Postman, Insomnia ou outra ferramenta de requisições HTTP.
+#### Cadastrar produto
+
+```http
+POST http://localhost:3000/insertProduct
+Content-Type: application/json
+```
+
+Corpo da requisição:
+
+```json
+{
+  "nome": "Teclado",
+  "quantidade": 10,
+  "preco": 149.90
+}
+```
+
+#### Atualizar preço de um produto
+
+```http
+PUT http://localhost:3000/updateProductPrice/1
+Content-Type: application/json
+```
+
+Corpo da requisição:
+
+```json
+{
+  "preco": 129.90
+}
+```
+
+#### Excluir produto
+
+```http
+DELETE http://localhost:3000/deleteProduct/1
+```
+
+#### Consultar soma dos preços
+
+```http
+GET http://localhost:3000/totalPrice/
+```
+
+#### Consultar média dos preços
+
+```http
+GET http://localhost:3000/avgPrice
+```
 
 ## Estrutura do projeto
 
@@ -123,26 +185,34 @@ projeto_api/
 │   ├── config/
 │   │   └── database.js
 │   └── main.js
-├── .env                 # Criado localmente; não enviar ao Git
+├── .env
 ├── .gitignore
 ├── package.json
 ├── package-lock.json
 └── README.md
 ```
 
-## Tratamento de respostas
+O arquivo `database.js` configura o pool de conexões com o MySQL. O arquivo `main.js` inicializa o Express e concentra as rotas e operações da API.
 
-A API utiliza códigos HTTP para indicar o resultado das consultas, por exemplo:
+## Conceitos praticados
 
-- `200 OK` — consulta realizada com sucesso.
-- `400 Bad Request` — ID informado é inválido.
-- `404 Not Found` — produto não encontrado.
-- `500 Internal Server Error` — erro interno ou falha na consulta ao banco.
+- Desenvolvimento de API REST.
+- Criação e organização de rotas HTTP.
+- Operações CRUD (Create, Read, Update e Delete).
+- Integração entre Node.js e MySQL.
+- Execução de consultas SQL.
+- Uso de parâmetros nas consultas ao banco de dados.
+- Programação assíncrona com `async/await`.
+- Tratamento de erros com `try/catch`.
+- Configuração de variáveis de ambiente.
 
-## Próximos passos
+## Próximas melhorias
 
-O projeto está em desenvolvimento e pode evoluir com a implementação das operações de criação, atualização e exclusão de produtos (CRUD completo), além de validações e melhorias no tratamento de erros.
+- Implementar validações mais completas dos dados recebidos.
+- Padronizar respostas e códigos de status HTTP.
+- Separar rotas, controladores e regras de negócio em módulos.
+- Adicionar testes automatizados e documentação interativa dos endpoints.
 
 ---
 
-Projeto desenvolvido para fins de estudo e prática de desenvolvimento Back-End.
+Projeto desenvolvido para fins de estudo e prática de desenvolvimento Back-end.
